@@ -66,22 +66,22 @@ class TestDemandEndpoints:
                     f"Item {item['item_name']} has {percent_change:.2f}% change, expected < 2%"
 
     def test_demand_forecast_has_new_items(self, client):
-        """Test that new demand forecast items exist."""
+        """Test that expected stable-trend demand forecast items exist."""
         response = client.get("/api/demand")
         data = response.json()
 
-        # Check for the new items we added
+        # Check for real inventory SKUs with stable trend
         skus = [item["item_sku"] for item in data]
 
-        # Should have Temperature Sensor Module and Logic Controller Board
-        assert "SNR-420" in skus, "Missing Temperature Sensor Module"
-        assert "CTL-330" in skus, "Missing Logic Controller Board"
+        # Should have Proximity Sensor and 24V 3A Industrial Power Supply
+        assert "PRX-204" in skus, "Missing Proximity Sensor"
+        assert "PSU-503" in skus, "Missing 24V 3A Industrial Power Supply"
 
         # Verify they are marked as stable
         for item in data:
-            if item["item_sku"] in ["SNR-420", "CTL-330"]:
+            if item["item_sku"] in ["PRX-204", "PSU-503"]:
                 assert item["trend"].lower() == "stable", \
-                    f"New item {item['item_name']} should have stable trend"
+                    f"Item {item['item_name']} should have stable trend"
 
 
 class TestBacklogEndpoints:
